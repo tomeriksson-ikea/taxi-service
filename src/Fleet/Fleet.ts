@@ -1,3 +1,3 @@
 import { ContactInformation } from "../ContactInformation/ContactInformation";
 
-export class Client extends ContactInformation {}
+export class Fleet extends ContactInformation {}

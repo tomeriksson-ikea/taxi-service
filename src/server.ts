@@ -8,8 +8,14 @@ app.post("/client", (req, res) => {
   res.status(201).send(req.body);
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}...`);
+app.post("/fleet", (req, res) => {
+  res.status(201).send(req.body);
 });
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Listening on port ${port}...`);
+  });
+}
 
 export { app };
