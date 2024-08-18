@@ -2,6 +2,8 @@ import request = require("supertest");
 import { app } from "../server";
 import { RideRequest } from "./RideRequest";
 import { Client } from "../Client/Client";
+import { Fleet } from "../Fleet/Fleet";
+import { Bid } from "../Bid/Bid";
 
 describe("RideRequest", () => {
   it("should submit and return a new RideRequest", async () => {
@@ -42,5 +44,37 @@ describe("RideRequest", () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual([rideRequest]);
+  });
+
+  it("should place bid on ride request by fleet", async () => {
+    // Create a ride request
+    const client = new Client("John Doe", "john.doe@email.com", "123");
+    const rideRequest = new RideRequest(
+      client,
+      "123 Main St",
+      "456 Elm St",
+      50
+    );
+
+    const submittedRideRequest = await request(app)
+      .post("/ride-requests")
+      .send(rideRequest);
+
+    // Create a fleet
+    const fleet = new Fleet(
+      "Johns Taxi fleet",
+      "john.doe@email.com",
+      "1234567890"
+    );
+
+    const bid = new Bid(fleet, 60);
+
+    // Place bid on ride request
+    const res = await request(app)
+      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+      .send(bid);
+
+    expect(res.status).toBe(201);
+    expect(res.body).toEqual(bid);
   });
 });
