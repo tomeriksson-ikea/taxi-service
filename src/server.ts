@@ -2,6 +2,7 @@ import express from "express";
 import { Client } from "./Client/Client";
 import { RideRequest } from "./RideRequest/RideRequest";
 import { routes as clientRoutes } from "./Client/Client.routes";
+import { routes as fleetRoutes } from "./Fleet/Fleet.routes";
 
 const app = express();
 const port = 8080;
@@ -10,9 +11,7 @@ app.use(express.json());
 
 app.use("/clients", clientRoutes);
 
-app.post("/fleets", (req, res) => {
-  res.status(201).send(req.body);
-});
+app.use("/fleets", fleetRoutes);
 
 app.post("/ride-requests", (req, res) => {
   res.status(201).send(req.body);
