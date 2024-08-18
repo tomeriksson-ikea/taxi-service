@@ -4,7 +4,7 @@ const port = 8080;
 
 app.use(express.json());
 
-app.post("/ride-request", (req, res) => {
+app.post("/client", (req, res) => {
   res.status(201).send();
 });
 
