@@ -12,6 +12,10 @@ app.post("/fleet", (req, res) => {
   res.status(201).send(req.body);
 });
 
+app.post("/ride-request", (req, res) => {
+  res.status(201).send();
+});
+
 if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => {
     console.log(`Listening on port ${port}...`);
