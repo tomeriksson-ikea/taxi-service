@@ -1,19 +1,27 @@
 import express from "express";
+import { Client } from "./Client/Client";
+import { RideRequest } from "./RideRequest/RideRequest";
 const app = express();
 const port = 8080;
 
 app.use(express.json());
 
-app.post("/client", (req, res) => {
+app.post("/clients", (req, res) => {
   res.status(201).send(req.body);
 });
 
-app.post("/fleet", (req, res) => {
+app.post("/fleets", (req, res) => {
   res.status(201).send(req.body);
 });
 
-app.post("/ride-request", (req, res) => {
+app.post("/ride-requests", (req, res) => {
   res.status(201).send(req.body);
+});
+
+app.get("/ride-requests", (req, res) => {
+  const client = new Client("John Doe", "john.doe@email.com", "123");
+  const rideRequest = new RideRequest(client, "123 Main St", "456 Elm St", 50);
+  res.status(200).send([rideRequest]);
 });
 
 if (process.env.NODE_ENV !== "test") {

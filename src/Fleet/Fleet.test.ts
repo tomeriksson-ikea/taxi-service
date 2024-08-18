@@ -11,7 +11,7 @@ describe("Fleet", () => {
     );
 
     const res = await request(app)
-      .post("/fleet")
+      .post("/fleets")
       .send(fleet);
 
     expect(res.status).toBe(201);
