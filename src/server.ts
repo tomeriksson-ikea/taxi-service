@@ -1,8 +1,7 @@
 import express from "express";
-import { Client } from "./Client/Client";
-import { RideRequest } from "./RideRequest/RideRequest";
 import { routes as clientRoutes } from "./Client/Client.routes";
 import { routes as fleetRoutes } from "./Fleet/Fleet.routes";
+import { routes as rideRequestRoutes } from "./RideRequest/RideRequest.routes";
 
 const app = express();
 const port = 8080;
@@ -13,15 +12,7 @@ app.use("/clients", clientRoutes);
 
 app.use("/fleets", fleetRoutes);
 
-app.post("/ride-requests", (req, res) => {
-  res.status(201).send(req.body);
-});
-
-app.get("/ride-requests", (req, res) => {
-  const client = new Client("John Doe", "john.doe@email.com", "123");
-  const rideRequest = new RideRequest(client, "123 Main St", "456 Elm St", 50);
-  res.status(200).send([rideRequest]);
-});
+app.use("/ride-requests", rideRequestRoutes);
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => {
