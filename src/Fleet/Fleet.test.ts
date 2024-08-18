@@ -3,7 +3,7 @@ import { app } from "../server";
 import { Fleet } from "./Fleet";
 
 describe("Fleet", () => {
-  it("should respond with 201 Created and with created fleet", async () => {
+  it("should register and return the registered fleet", async () => {
     const fleet = new Fleet(
       "Johns Taxi fleet",
       "john.doe@email.com",
