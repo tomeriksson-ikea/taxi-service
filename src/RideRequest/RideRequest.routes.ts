@@ -16,7 +16,7 @@ routes.get("/", (req, res) => {
   res.status(200).send([rideRequest]);
 });
 
-routes.post("/:id/bids", (req, res) => {
+routes.post("/:rideRequestId/bids", (req, res) => {
   const fleet = new Fleet(
     "Johns Taxi fleet",
     "john.doe@email.com",
@@ -25,6 +25,29 @@ routes.post("/:id/bids", (req, res) => {
 
   const bid = new Bid(fleet, 60);
   res.status(201).send(bid);
+});
+
+routes.get("/:rideRequestId/bids", (req, res) => {
+  const fleetA = new Fleet(
+    "Johns Taxi fleet",
+    "john.doe@email.com",
+    "1234567890"
+  );
+
+  const fleetB = new Fleet(
+    "Janes Taxi fleet",
+    "jane.doe@email.com",
+    "1234567890"
+  );
+
+  const bidA = new Bid(fleetA, 60);
+  const bidB = new Bid(fleetB, 50);
+
+  res.status(200).send([bidA, bidB]);
+});
+
+routes.put("/:rideRequestId/bids/:bidId/accept", (req, res) => {
+  res.status(200).send({ accepted: true });
 });
 
 export { routes };

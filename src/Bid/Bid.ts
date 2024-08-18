@@ -9,4 +9,12 @@ export class Bid {
     this.fleet = fleet;
     this.bidAmount = bidAmount;
   }
+
+  accept() {
+    this.accepted = true;
+  }
+
+  isAccepted() {
+    return this.accepted;
+  }
 }
