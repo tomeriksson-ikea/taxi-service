@@ -13,7 +13,7 @@ app.post("/fleet", (req, res) => {
 });
 
 app.post("/ride-request", (req, res) => {
-  res.status(201).send();
+  res.status(201).send(req.body);
 });
 
 if (process.env.NODE_ENV !== "test") {
