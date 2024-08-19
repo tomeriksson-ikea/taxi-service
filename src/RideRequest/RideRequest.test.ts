@@ -184,4 +184,53 @@ describe("RideRequest", () => {
     expect(res.body.id).toEqual(bidBId);
     expect(res.body.accepted).toEqual(true);
   });
+
+  it("should close the bidding when a ride request bid is accepted", async () => {
+    // Submit a ride request
+    const client = new Client("John Doe", "john.doe@email.com", "123");
+
+    const rideRequest = new RideRequest(
+      client,
+      "123 Main St",
+      "456 Elm St",
+      50
+    );
+
+    const submittedRideRequest = await request(app)
+      .post("/ride-requests")
+      .send(rideRequest);
+
+    // Create a fleet
+    const fleet = new Fleet(
+      "Johns Taxi fleet",
+      "john.doe@email.com",
+      "1234567890"
+    );
+
+    const firstBid = new Bid(fleet, 60);
+
+    // Place bid on ride request
+    const firstBidRes = await request(app)
+      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+      .send(firstBid);
+
+    // Accept a bid
+    await request(app)
+      .put(
+        `/ride-requests/${submittedRideRequest.body.id}/bids/${firstBidRes.body.id}/accept`
+      )
+      .send();
+
+    // Place another bid
+    const secondBid = new Bid(fleet, 50);
+
+    const secondBidRes = await request(app)
+      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+      .send(secondBid);
+
+    expect(secondBidRes.status).toBe(400);
+    expect(secondBidRes.body).toEqual({
+      error: "Bidding is closed for this ride request"
+    });
+  });
 });
