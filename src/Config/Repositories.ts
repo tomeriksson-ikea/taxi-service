@@ -1,14 +1,11 @@
-import { Services } from "./Services";
 import { RideRequestRepository } from "../RideRequest/RideRequest.repository";
+import { Config } from "./Config";
 
 export class Repositories {
-  private services: Services;
   private readonly rideRequestRepository: RideRequestRepository;
-  constructor(services: Services) {
-    this.services = services;
-
+  constructor(config: Config) {
     this.rideRequestRepository = new RideRequestRepository(
-      services.getMongoDB()
+      config.getMongoDBConnectionString()
     );
   }
 

@@ -1,49 +1,72 @@
-import request = require("supertest");
-import { app } from "../server";
+import { agent } from "supertest";
+import { Express } from "express";
 import { RideRequest } from "./RideRequest";
 import { Client } from "../Client/Client";
 import { Fleet } from "../Fleet/Fleet";
 import { Bid } from "../Bid/Bid";
+import { setupApp } from "../App";
+import { purgeMongoDB } from "../../test/MongoDB.setup";
 
 describe("RideRequest", () => {
+  let app: Express;
+  beforeEach(async () => {
+    app = await setupApp();
+  });
+
+  afterEach(purgeMongoDB);
+
   it("should submit and return a new RideRequest", async () => {
     const client = new Client("John Doe", "john.doe@email.com", "123");
-    const rideRequest = new RideRequest(
-      client,
-      "123 Main St",
-      "456 Elm St",
-      50
-    );
 
-    const res = await request(app)
+    const rideRequestBody = {
+      client,
+      pickupLocation: "123 Main St",
+      dropoffLocation: "456 Elm St",
+      proposedPrice: 50
+    };
+
+    const res = await agent(app)
       .post("/ride-requests")
-      .send(rideRequest);
+      .send(rideRequestBody);
 
     expect(res.status).toBe(201);
-    expect(res.body).toEqual(rideRequest);
+
+    const expectedResponse = {
+      _id: expect.any(String),
+      bids: [],
+      ...rideRequestBody
+    };
+    expect(res.body).toEqual(expectedResponse);
   });
 
   it("should list ride requests", async () => {
     // Create a ride request
     const client = new Client("John Doe", "john.doe@email.com", "123");
-    const rideRequest = new RideRequest(
-      client,
-      "123 Main St",
-      "456 Elm St",
-      50
-    );
 
-    await request(app)
+    const rideRequestBody = {
+      client,
+      pickupLocation: "123 Main St",
+      dropoffLocation: "456 Elm St",
+      proposedPrice: 50
+    };
+
+    await agent(app)
       .post("/ride-requests")
-      .send(rideRequest);
+      .send(rideRequestBody);
 
     // List ride requests
-    const res = await request(app)
+    const res = await agent(app)
       .get("/ride-requests")
       .send();
 
+    const expectedResponseBody = {
+      _id: expect.any(String),
+      bids: [],
+      ...rideRequestBody
+    };
+
+    expect(res.body).toEqual([expectedResponseBody]);
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([rideRequest]);
   });
 
   it("should place bid on ride request by fleet", async () => {
@@ -56,7 +79,7 @@ describe("RideRequest", () => {
       50
     );
 
-    const submittedRideRequest = await request(app)
+    const submittedRideRequest = await agent(app)
       .post("/ride-requests")
       .send(rideRequest);
 
@@ -67,31 +90,36 @@ describe("RideRequest", () => {
       "1234567890"
     );
 
-    const bid = new Bid(fleet, 60);
-
     // Place bid on ride request
-    const res = await request(app)
-      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
-      .send(bid);
+    const res = await agent(app)
+      .post(`/ride-requests/${submittedRideRequest.body._id}/bids`)
+      .send({ fleet, bidAmount: 50 });
 
     expect(res.status).toBe(201);
-    expect(res.body).toEqual(bid);
+    expect(res.body).toEqual({
+      _id: expect.any(String),
+      accepted: false,
+      bidAmount: 50,
+      fleet: {
+        email: "john.doe@email.com",
+        name: "Johns Taxi fleet",
+        phone: "1234567890"
+      }
+    });
   });
 
   it("should list bids for a ride request", async () => {
     // Submit a ride request
     const client = new Client("John Doe", "john.doe@email.com", "123");
 
-    const rideRequest = new RideRequest(
-      client,
-      "123 Main St",
-      "456 Elm St",
-      50
-    );
-
-    const submittedRideRequest = await request(app)
+    const submittedRideRequest = await agent(app)
       .post("/ride-requests")
-      .send(rideRequest);
+      .send({
+        client,
+        pickupLocation: "123 Main St",
+        dropoffLocation: "456 Elm St",
+        proposedPrice: 50
+      });
 
     // Create fleets
     const fleetA = new Fleet(
@@ -106,25 +134,42 @@ describe("RideRequest", () => {
       "1234567890"
     );
 
-    // Create bids
-    const bidA = new Bid(fleetA, 60);
-    const bidB = new Bid(fleetB, 50);
-
     // Place bids on ride request
-    await request(app)
-      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
-      .send(bidA);
+    await agent(app)
+      .post(`/ride-requests/${submittedRideRequest.body._id}/bids`)
+      .send({ fleet: fleetA, bidAmount: 50 });
 
-    await request(app)
-      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
-      .send(bidB);
+    await agent(app)
+      .post(`/ride-requests/${submittedRideRequest.body._id}/bids`)
+      .send({ fleet: fleetB, bidAmount: 60 });
 
-    const res = await request(app)
-      .get(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+    const res = await agent(app)
+      .get(`/ride-requests/${submittedRideRequest.body._id}/bids`)
       .send();
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([bidA, bidB]);
+    expect(res.body).toEqual([
+      {
+        _id: expect.any(String),
+        accepted: false,
+        bidAmount: 50,
+        fleet: {
+          email: "john.doe@email.com",
+          name: "Johns Taxi fleet",
+          phone: "1234567890"
+        }
+      },
+      {
+        _id: expect.any(String),
+        accepted: false,
+        bidAmount: 60,
+        fleet: {
+          email: "jane.doe@email.com",
+          name: "Janes Taxi fleet",
+          phone: "1234567890"
+        }
+      }
+    ]);
   });
 
   it("should accept a placed bid on a ride request", async () => {
@@ -138,7 +183,7 @@ describe("RideRequest", () => {
       50
     );
 
-    const submittedRideRequest = await request(app)
+    const submittedRideRequest = await agent(app)
       .post("/ride-requests")
       .send(rideRequest);
 
@@ -160,28 +205,27 @@ describe("RideRequest", () => {
     const bidB = new Bid(fleetB, 50);
 
     // Place bids on ride request
-    await request(app)
-      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+    await agent(app)
+      .post(`/ride-requests/${submittedRideRequest.body._id}/bids`)
       .send(bidA);
 
-    await request(app)
-      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+    await agent(app)
+      .post(`/ride-requests/${submittedRideRequest.body._id}/bids`)
       .send(bidB);
 
-    const listBidsRes = await request(app)
-      .get(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+    const listBidsRes = await agent(app)
+      .get(`/ride-requests/${submittedRideRequest.body._id}/bids`)
       .send();
 
     // Accept a bid
-    const rideRequestId = submittedRideRequest.body.id;
-    const bidBId = listBidsRes.body[1].id;
+    const rideRequestId = submittedRideRequest.body._id;
+    const bidBId = listBidsRes.body[1]._id;
 
-    const res = await request(app)
+    const res = await agent(app)
       .put(`/ride-requests/${rideRequestId}/bids/${bidBId}/accept`)
       .send();
 
     expect(res.status).toBe(200);
-    expect(res.body.id).toEqual(bidBId);
     expect(res.body.accepted).toEqual(true);
   });
 
@@ -196,36 +240,41 @@ describe("RideRequest", () => {
       50
     );
 
-    const submittedRideRequest = await request(app)
+    const submittedRideRequest = await agent(app)
       .post("/ride-requests")
       .send(rideRequest);
 
     // Create a fleet
-    const fleet = new Fleet(
+    const fleetA = new Fleet(
       "Johns Taxi fleet",
       "john.doe@email.com",
       "1234567890"
     );
 
-    const firstBid = new Bid(fleet, 60);
+    const firstBid = new Bid(fleetA, 60);
 
     // Place bid on ride request
-    const firstBidRes = await request(app)
-      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+    const firstBidRes = await agent(app)
+      .post(`/ride-requests/${submittedRideRequest.body._id}/bids`)
       .send(firstBid);
 
     // Accept a bid
-    await request(app)
+    await agent(app)
       .put(
-        `/ride-requests/${submittedRideRequest.body.id}/bids/${firstBidRes.body.id}/accept`
+        `/ride-requests/${submittedRideRequest.body._id}/bids/${firstBidRes.body._id}/accept`
       )
       .send();
 
+    const fleetB = new Fleet(
+      "Janes Taxi fleet",
+      "jane.doe@email.com",
+      "1234567890"
+    );
     // Place another bid
-    const secondBid = new Bid(fleet, 50);
+    const secondBid = new Bid(fleetB, 50);
 
-    const secondBidRes = await request(app)
-      .post(`/ride-requests/${submittedRideRequest.body.id}/bids`)
+    const secondBidRes = await agent(app)
+      .post(`/ride-requests/${submittedRideRequest.body._id}/bids`)
       .send(secondBid);
 
     expect(secondBidRes.status).toBe(400);

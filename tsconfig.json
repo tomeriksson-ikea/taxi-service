@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "es2022",
-    "rootDir": "./src",
-    "moduleResolution": "node",
     "outDir": "./dist",
+    "rootDir": "./src",
+    "target": "es2022",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strict": true,
-    "noImplicitAny": true,
-    "skipLibCheck": true
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "sourceMap": true,
+    "lib": ["es2022", "esnext.asynciterable"]
   }
 }

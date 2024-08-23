@@ -1,8 +1,15 @@
-import request = require("supertest");
-import { app } from "../server";
+import { agent } from "supertest";
+import { setupApp } from "../App";
 import { Fleet } from "./Fleet";
+import { Express } from "express";
 
 describe("Fleet", () => {
+  let app: Express;
+
+  beforeEach(async () => {
+    app = await setupApp();
+  });
+
   it("should register and return the registered fleet", async () => {
     const fleet = new Fleet(
       "Johns Taxi fleet",
@@ -10,7 +17,7 @@ describe("Fleet", () => {
       "1234567890"
     );
 
-    const res = await request(app)
+    const res = await agent(app)
       .post("/fleets")
       .send(fleet);
 

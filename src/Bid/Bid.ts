@@ -1,20 +1,21 @@
 import { Fleet } from "../Fleet/Fleet";
+import { Identifiable } from "../Common/Identifiable";
 
-export class Bid {
-  private fleet: Fleet;
-  private bidAmount: number;
-  private accepted: boolean = false;
+export class Bid extends Identifiable {
+  readonly fleet: Fleet;
+  readonly bidAmount: number;
+  readonly accepted: boolean = false;
 
-  constructor(fleet: Fleet, bidAmount: number) {
-    this.fleet = fleet;
+  constructor(fleet: Fleet, bidAmount: number, accepted?: boolean) {
+    super();
+    this.fleet = new Fleet(fleet.name, fleet.email, fleet.phone);
     this.bidAmount = bidAmount;
+    if (accepted) {
+      this.accepted = accepted;
+    }
   }
 
-  accept() {
-    this.accepted = true;
-  }
-
-  isAccepted() {
-    return this.accepted;
+  getFleet() {
+    return this.fleet;
   }
 }
