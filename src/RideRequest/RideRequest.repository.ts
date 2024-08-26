@@ -1,11 +1,10 @@
-import { RideRequest } from "./RideRequest";
-import { RideRequestError } from "../Common/Errors";
-import { Bid } from "../Bid/Bid";
 import { Collection, MongoClient, ServerApiVersion } from "mongodb";
+import { RideRequest, RideRequestData } from "./RideRequest";
+import { RawEntity } from "../Common/Entity";
 
 export class RideRequestRepository {
   private readonly client: MongoClient;
-  private readonly rideRequests: Collection<RideRequest>;
+  private readonly rideRequests: Collection<RawEntity<RideRequestData>>;
 
   constructor(connectionString: string) {
     this.client = new MongoClient(connectionString, {
@@ -24,76 +23,30 @@ export class RideRequestRepository {
     await this.client.connect();
   }
 
-  async add(rideRequest: RideRequest): Promise<RideRequest> {
-    const docWithRemovedRefs = Object.assign({}, rideRequest);
-    const res = await this.rideRequests.insertOne(docWithRemovedRefs);
+  async create(rideRequest: RideRequest): Promise<RideRequest> {
+    const res = await this.rideRequests.insertOne(rideRequest.toRaw());
     if (!res.acknowledged) {
-      throw new RideRequestError("Failed to add ride request", rideRequest);
+      throw new Error("Could not create ride request");
     }
     return rideRequest;
   }
 
-  async addBid(rideRequestId: string, bid: Bid): Promise<Bid> {
-    const docWithRemovedRefs = Object.assign({}, bid);
-    try {
-      await this.rideRequests.updateOne(
-        {
-          _id: rideRequestId
-        },
-        { $push: { bids: docWithRemovedRefs } }
-      );
-      return bid;
-    } catch (e) {
-      throw new RideRequestError("Failed to add bid to ride request");
+  async get(id: string): Promise<RideRequest> {
+    const rideRequest = await this.rideRequests.findOne({ id });
+    if (!rideRequest) {
+      throw new Error("Ride request not found");
     }
+    return RideRequest.createFromRaw(rideRequest);
   }
 
-  async list(): Promise<RideRequest[]> {
-    try {
-      const rideRequestDocuments = await this.rideRequests
-        .find({})
-        .project({ _id: 0, "bids._id": 0 })
-        .toArray();
-      return rideRequestDocuments.map(
-        document =>
-          new RideRequest(
-            document.client,
-            document.pickupLocation,
-            document.dropoffLocation,
-            document.proposedPrice,
-            document.bids
-          )
-      );
-    } catch (e) {
-      throw new RideRequestError("Failed to list ride requests");
+  async update(rideRequest: RideRequest): Promise<RideRequest> {
+    const rawRideRequest = await this.rideRequests.replaceOne(
+      { id: rideRequest.getId() },
+      rideRequest.toRaw()
+    );
+    if (!rawRideRequest.acknowledged) {
+      throw new Error("Could not update ride request");
     }
-  }
-
-  async get(id: string): Promise<RideRequest | null> {
-    try {
-      const rideRequest: any = await this.rideRequests.findOne({ _id: id });
-      if (!rideRequest) return null;
-
-      return new RideRequest(
-        rideRequest.client,
-        rideRequest.pickupLocation,
-        rideRequest.dropoffLocation,
-        rideRequest.proposedPrice,
-        rideRequest.bids
-      );
-    } catch (e) {
-      throw new RideRequestError("Failed to get ride request");
-    }
-  }
-
-  async acceptBid(rideRequestId: string, bidId: string): Promise<void> {
-    try {
-      await this.rideRequests.updateOne(
-        { _id: rideRequestId, "bids._id": bidId },
-        { $set: { "bids.$.accepted": true } }
-      );
-    } catch (e) {
-      throw new RideRequestError("Failed to accept bid on ride request");
-    }
+    return rideRequest;
   }
 }

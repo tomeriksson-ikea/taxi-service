@@ -1,45 +1,64 @@
-import { Client } from "../Client/Client";
-import { Bid } from "../Bid/Bid";
-import { Identifiable } from "../Common/Identifiable";
+import { Entity, RawEntity } from "../Common/Entity";
+import { ClientProps } from "../Client/Client";
+import { Bid, BidData } from "../Bid/Bid";
 
-export class RideRequest extends Identifiable {
-  private client: Client;
-  private pickupLocation: string;
-  private dropoffLocation: string;
-  private proposedPrice: number;
-  private readonly bids: Bid[] = [];
+export type RideRequestProps = {
+  client: ClientProps;
+  pickupLocation: string;
+  dropoffLocation: string;
+  proposedPrice: number;
+};
 
-  constructor(
-    client: Client,
-    pickupLocation: string,
-    dropoffLocation: string,
-    proposedPrice: number,
-    bids?: Bid[]
-  ) {
-    super();
-    this.client = client;
-    this.pickupLocation = pickupLocation;
-    this.dropoffLocation = dropoffLocation;
-    this.proposedPrice = proposedPrice;
-    if (bids) {
-      this.bids = bids.map(
-        bid => new Bid(bid.fleet, bid.bidAmount, bid.accepted)
-      );
-    }
+export type RideRequestData = RideRequestProps & {
+  bids: RawEntity<BidData>[];
+};
+
+export class RideRequest extends Entity<RideRequestData> {
+  private bids: Bid[];
+
+  protected constructor(data: RideRequestData, id?: string) {
+    super(data, id);
+    this.bids = data.bids.map(Bid.createFromRaw);
+  }
+
+  static create(props: RideRequestProps): RideRequest {
+    return new RideRequest({ ...props, bids: [] });
+  }
+
+  static createFromRaw(props: RawEntity<RideRequestData>): RideRequest {
+    return new RideRequest(props.data, props.id);
   }
 
   addBid(bid: Bid) {
-    if (this.bids.some(b => b.getFleet().equals(bid.getFleet()))) {
-      throw new Error("Fleet already placed a bid");
+    if (this.hasAcceptedBid()) {
+      throw new Error("Cannot add bid to ride request with accepted bid");
     }
     this.bids.push(bid);
   }
 
-  getBids(): Bid[] {
-    return this.bids;
+  private hasAcceptedBid(): boolean {
+    return this.bids.some(bid => bid.isAccepted());
   }
 
-  hasAcceptedBid(): boolean {
-    return this.bids.some(bid => bid.accepted);
+  acceptBid(bidId: string) {
+    this.getBid(bidId).accept();
+  }
+
+  getBid(bidId: string) {
+    const bid = this.bids.find(bid => bid.getId() === bidId);
+    if (!bid) {
+      throw new Error("Bid not found on ride request");
+    }
+    return bid;
+  }
+
+  toRaw(): RawEntity<RideRequestData> {
+    return {
+      id: this.id,
+      data: {
+        ...this.data,
+        bids: this.bids.map(bid => bid.toRaw())
+      }
+    };
   }
 }

@@ -1,8 +1,8 @@
 import express, { Express } from "express";
 import { Repositories } from "./Config/Repositories";
-import { routes as clientRoutes } from "./Client/Client.routes";
-import { routes as fleetRoutes } from "./Fleet/Fleet.routes";
-import { registerRideRequestHandlers } from "./RideRequest/RideRequest.routes";
+import { clientHandlers } from "./Client/Client.handlers";
+import { fleetHandlers } from "./Fleet/Fleet.handlers";
+import { rideRequestHandlers } from "./RideRequest/RideRequest.handlers";
 import { Config } from "./Config/Config";
 
 export const setupApp = async (): Promise<Express> => {
@@ -15,11 +15,11 @@ const handlers = (repositories: Repositories): Express => {
   const app = express();
   app.use(express.json());
 
-  app.use("/clients", clientRoutes);
-  app.use("/fleets", fleetRoutes);
+  app.use("/clients", clientHandlers(repositories.getClientRepository()));
+  app.use("/fleets", fleetHandlers(repositories.getFleetRepository()));
   app.use(
     "/ride-requests",
-    registerRideRequestHandlers(repositories.getRideRequestRepository())
+    rideRequestHandlers(repositories.getRideRequestRepository())
   );
 
   return app;

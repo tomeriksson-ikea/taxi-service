@@ -1,3 +1,13 @@
-import { ContactInformation } from "../ContactInformation/ContactInformation";
+import { Entity } from "../Common/Entity";
 
-export class Fleet extends ContactInformation {}
+export interface FleetProps {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export class Fleet extends Entity<FleetProps> {
+  constructor(data: FleetProps, id?: string) {
+    super(data, id);
+  }
+}

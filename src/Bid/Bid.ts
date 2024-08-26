@@ -1,21 +1,32 @@
-import { Fleet } from "../Fleet/Fleet";
-import { Identifiable } from "../Common/Identifiable";
+import { Entity, RawEntity } from "../Common/Entity";
+import { FleetProps } from "../Fleet/Fleet";
 
-export class Bid extends Identifiable {
-  readonly fleet: Fleet;
+export type BidData = {
+  readonly fleet: FleetProps;
   readonly bidAmount: number;
-  readonly accepted: boolean = false;
+  accepted: boolean;
+};
 
-  constructor(fleet: Fleet, bidAmount: number, accepted?: boolean) {
-    super();
-    this.fleet = new Fleet(fleet.name, fleet.email, fleet.phone);
-    this.bidAmount = bidAmount;
-    if (accepted) {
-      this.accepted = accepted;
-    }
+export type BidProps = Omit<BidData, "accepted">;
+
+export class Bid extends Entity<BidData> {
+  protected constructor(data: BidData, id?: string) {
+    super(data, id);
   }
 
-  getFleet() {
-    return this.fleet;
+  static create(props: BidProps): Bid {
+    return new Bid({ ...props, accepted: false });
+  }
+
+  static createFromRaw(props: RawEntity<BidData>): Bid {
+    return new Bid(props.data, props.id);
+  }
+
+  accept() {
+    this.data.accepted = true;
+  }
+
+  isAccepted() {
+    return this.data.accepted;
   }
 }
