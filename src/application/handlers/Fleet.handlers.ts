@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { FleetController } from "./Fleet.controller";
+import { FleetController } from "../../domain/Fleet/Fleet.controller";
 
 export const fleetHandlers = (controller: FleetController): Router => {
   const routes = Router();

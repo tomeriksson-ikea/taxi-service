@@ -1,4 +1,4 @@
-import { Entity, RawEntity } from "../Common/Entity";
+import { Entity, RawEntity } from "../Entity";
 import { FleetProps } from "../Fleet/Fleet";
 
 export type BidData = {

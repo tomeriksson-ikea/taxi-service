@@ -1,5 +1,5 @@
 import { agent } from "supertest";
-import { setupApp } from "../App";
+import { setupApp } from "../../application/App";
 import { Express } from "express";
 
 describe("Client", () => {

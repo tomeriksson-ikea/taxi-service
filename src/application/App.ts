@@ -1,14 +1,14 @@
 import express, { Express } from "express";
-import { clientHandlers } from "./Client/Client.handlers";
-import { rideRequestHandlers } from "./RideRequest/RideRequest.handlers";
-import { fleetHandlers } from "./Fleet/Fleet.handlers";
+import { clientHandlers } from "./handlers/Client.handlers";
+import { rideRequestHandlers } from "./handlers/RideRequest.handlers";
+import { fleetHandlers } from "./handlers/Fleet.handlers";
 import { Config } from "./Config/Config";
-import { RideRequestController } from "./RideRequest/RideRequest.controller";
-import { ClientController } from "./Client/Client.controller";
-import { FleetController } from "./Fleet/Fleet.controller";
-import { RideRequestRepository } from "./RideRequest/RideRequest.repository";
-import { ClientRepository } from "./Client/Client.repository";
-import { FleetRepository } from "./Fleet/Fleet.repository";
+import { RideRequestController } from "../domain/RideRequest/RideRequest.controller";
+import { ClientController } from "../domain/Client/Client.controller";
+import { FleetController } from "../domain/Fleet/Fleet.controller";
+import { RideRequestRepository } from "../repositories/RideRequest.repository";
+import { ClientRepository } from "../repositories/Client.repository";
+import { FleetRepository } from "../repositories/Fleet.repository";
 
 export const setupApp = async (): Promise<Express> => {
   const config = new Config();

@@ -1,4 +1,4 @@
-import { Entity, RawEntity } from "../Common/Entity";
+import { Entity, RawEntity } from "../Entity";
 import { ClientProps } from "../Client/Client";
 import { Bid, BidData } from "../Bid/Bid";
 
