@@ -2,7 +2,7 @@ import express, { Express } from "express";
 import { clientHandlers } from "./handlers/Client.handlers";
 import { rideRequestHandlers } from "./handlers/RideRequest.handlers";
 import { fleetHandlers } from "./handlers/Fleet.handlers";
-import { Config } from "./Config/Config";
+import { Config } from "./config";
 import { RideRequestController } from "../domain/RideRequest/RideRequest.controller";
 import { ClientController } from "../domain/Client/Client.controller";
 import { FleetController } from "../domain/Fleet/Fleet.controller";

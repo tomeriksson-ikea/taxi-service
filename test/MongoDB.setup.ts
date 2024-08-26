@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { Config } from "../src/Config/Config";
+import { Config } from "../src/application/config";
 
 export const purgeMongoDB = async () => {
   const config = new Config();

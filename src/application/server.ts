@@ -1,5 +1,5 @@
 import { Express } from "express";
-import { setupApp } from "./App";
+import { setupApp } from "./app";
 
 const port = 8080;
 const start = (app: Express) => {

@@ -1,5 +1,5 @@
 import { Express } from "express";
-import { setupApp } from "../../application/App";
+import { setupApp } from "../../application/app";
 import { purgeMongoDB } from "../../../test/MongoDB.setup";
 import { RideRequestProps } from "./RideRequest";
 import { agent } from "supertest";
