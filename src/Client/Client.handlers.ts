@@ -1,14 +1,11 @@
 import { Router } from "express";
-import { ClientRepository } from "./Client.repository";
-import { Client } from "./Client";
+import { ClientController } from "./Client.controller";
 
-export const clientHandlers = (clientRepository: ClientRepository): Router => {
+export const clientHandlers = (controller: ClientController): Router => {
   const routes = Router();
 
   routes.post("/", async (req, res) => {
-    const client = new Client(req.body);
-
-    await clientRepository.create(client);
+    const client = await controller.createClient(req.body);
 
     return res.status(201).send(client.toRaw());
   });

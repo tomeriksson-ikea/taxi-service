@@ -1,26 +1,22 @@
 import { Request, Router } from "express";
-import { RideRequestRepository } from "./RideRequest.repository";
-import { RideRequest } from "./RideRequest";
-import { Bid } from "../Bid/Bid";
+import { RideRequestController } from "./RideRequest.controller";
 
 export const rideRequestHandlers = (
-  rideRequestRepository: RideRequestRepository
+  controller: RideRequestController
 ): Router => {
   const routes = Router();
 
   routes.post("/", async (req, res) => {
-    const rideRequest = RideRequest.create(req.body);
-    await rideRequestRepository.create(rideRequest);
+    const rideRequest = await controller.createRideRequest(req.body);
     return res.status(201).send(rideRequest.toRaw());
   });
 
   routes.post("/:id/bids", async (req, res) => {
-    const rideRequest = await rideRequestRepository.get(req.params.id);
-
-    const bid = Bid.create(req.body);
     try {
-      rideRequest.addBid(bid);
-      await rideRequestRepository.update(rideRequest);
+      const bid = await controller.placeBidOnRideRequest(
+        req.params.id,
+        req.body
+      );
       return res.status(201).send(bid.toRaw());
     } catch (e) {
       return res
@@ -32,13 +28,10 @@ export const rideRequestHandlers = (
   routes.post(
     "/:id/bids/:bidId/accept",
     async (req: Request<{ id: string; bidId: string }>, res) => {
-      const rideRequest = await rideRequestRepository.get(req.params.id);
-
-      rideRequest.acceptBid(req.params.bidId);
-
-      await rideRequestRepository.update(rideRequest);
-
-      const bid = rideRequest.getBid(req.params.bidId);
+      const bid = await controller.acceptRideRequestBid(
+        req.params.id,
+        req.params.bidId
+      );
       return res.status(200).send(bid.toRaw());
     }
   );

@@ -1,8 +1,9 @@
 import { Collection, MongoClient, ServerApiVersion } from "mongodb";
 import { RideRequest, RideRequestData } from "./RideRequest";
 import { RawEntity } from "../Common/Entity";
+import { Repository } from "../Common/Repository";
 
-export class RideRequestRepository {
+export class RideRequestRepository implements Repository {
   private readonly client: MongoClient;
   private readonly rideRequests: Collection<RawEntity<RideRequestData>>;
 

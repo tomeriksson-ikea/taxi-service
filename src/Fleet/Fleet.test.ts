@@ -1,7 +1,6 @@
 import { agent } from "supertest";
 import { setupApp } from "../App";
 import { Express } from "express";
-import { FleetProps } from "./Fleet";
 
 describe("Fleet", () => {
   let app: Express;
@@ -11,7 +10,7 @@ describe("Fleet", () => {
   });
 
   it("should register and return the registered fleet", async () => {
-    const fleet: FleetProps = {
+    const fleet = {
       name: "John Does Fleet",
       email: "john.doe@fleet.com",
       phone: "1234567890"

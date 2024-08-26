@@ -1,8 +1,9 @@
 import { Collection, MongoClient, ServerApiVersion } from "mongodb";
 import { Client, ClientProps } from "./Client";
 import { RawEntity } from "../Common/Entity";
+import { Repository } from "../Common/Repository";
 
-export class ClientRepository {
+export class ClientRepository implements Repository {
   private readonly client: MongoClient;
   private readonly clients: Collection<RawEntity<ClientProps>>;
 

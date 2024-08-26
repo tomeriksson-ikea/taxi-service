@@ -1,4 +1,4 @@
-import { Entity } from "../Common/Entity";
+import { Entity, RawEntity } from "../Common/Entity";
 
 export interface ClientProps {
   name: string;
@@ -6,8 +6,18 @@ export interface ClientProps {
   phone: string;
 }
 
+export type ClientData = ClientProps;
+
 export class Client extends Entity<ClientProps> {
-  constructor(data: ClientProps, id?: string) {
+  protected constructor(data: ClientProps, id?: string) {
     super(data, id);
+  }
+
+  static create(props: ClientProps): Client {
+    return new Client(props);
+  }
+
+  static createFromRaw(props: RawEntity<ClientData>): Client {
+    return new Client(props.data, props.id);
   }
 }

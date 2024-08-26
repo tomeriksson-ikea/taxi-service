@@ -1,14 +1,11 @@
 import { Router } from "express";
-import { FleetRepository } from "./Fleet.repository";
-import { Fleet } from "./Fleet";
+import { FleetController } from "./Fleet.controller";
 
-export const fleetHandlers = (fleetRepository: FleetRepository): Router => {
+export const fleetHandlers = (controller: FleetController): Router => {
   const routes = Router();
 
   routes.post("/", async (req, res) => {
-    const fleet = new Fleet(req.body);
-
-    await fleetRepository.create(fleet);
+    const fleet = await controller.createFleet(req.body);
 
     return res.status(201).send(fleet.toRaw());
   });
