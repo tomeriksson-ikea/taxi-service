@@ -9,21 +9,25 @@ import { FleetController } from "../domain/Fleet/Fleet.controller";
 import { RideRequestRepository } from "../repositories/RideRequest.repository";
 import { ClientRepository } from "../repositories/Client.repository";
 import { FleetRepository } from "../repositories/Fleet.repository";
+import { Repository } from "../repositories/Repository";
+import { ClientValidator } from "./validators/Client.validator";
 
 export const setupApp = async (): Promise<Express> => {
   const config = new Config();
 
   const connectionString = config.getMongoDBConnectionString();
 
+  const repositories: Repository[] = [];
   const rideRequestRepository = new RideRequestRepository(connectionString);
-  const clientRepository = new ClientRepository(connectionString);
-  const fleetRepository = new FleetRepository(connectionString);
+  repositories.push(rideRequestRepository);
 
-  for (const repository of [
-    rideRequestRepository,
-    clientRepository,
-    fleetRepository
-  ]) {
+  const clientRepository = new ClientRepository(connectionString);
+  repositories.push(clientRepository);
+
+  const fleetRepository = new FleetRepository(connectionString);
+  repositories.push(fleetRepository);
+
+  for (const repository of repositories) {
     await repository.init();
   }
 
@@ -33,9 +37,11 @@ export const setupApp = async (): Promise<Express> => {
     rideRequestRepository
   );
 
+  const clientValidator = new ClientValidator();
+
   const app = express();
   app.use(express.json());
-  app.use("/clients", clientHandlers(clientController));
+  app.use("/clients", clientHandlers(clientController, clientValidator));
   app.use("/fleets", fleetHandlers(fleetController));
   app.use("/ride-requests", rideRequestHandlers(rideRequestController));
   return app;
