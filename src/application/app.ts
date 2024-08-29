@@ -11,6 +11,7 @@ import { ClientRepository } from "../repositories/Client.repository";
 import { FleetRepository } from "../repositories/Fleet.repository";
 import { Repository } from "../repositories/Repository";
 import { ClientValidator } from "./validators/Client.validator";
+import { errorHandler } from "./handlers/Error.handler";
 
 export const setupApp = async (): Promise<Express> => {
   const config = new Config();
@@ -44,5 +45,8 @@ export const setupApp = async (): Promise<Express> => {
   app.use("/clients", clientHandlers(clientController, clientValidator));
   app.use("/fleets", fleetHandlers(fleetController));
   app.use("/ride-requests", rideRequestHandlers(rideRequestController));
+
+  app.use(errorHandler);
+
   return app;
 };

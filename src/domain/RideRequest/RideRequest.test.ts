@@ -209,8 +209,8 @@ describe("RideRequest", () => {
     // Expect an error
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
-      id: expect.any(String),
-      error: "Cannot add bid to ride request with accepted bid"
+      message: "Cannot add bid to ride request with accepted bid",
+      error: "BadRequest"
     });
   });
 });

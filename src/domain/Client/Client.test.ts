@@ -38,7 +38,8 @@ describe("Client", () => {
 
       expect(res.status).toBe(400);
       expect(res.body).toEqual({
-        error: "Invalid client: Client name must be of type string"
+        message: "Client name must be of type string",
+        error: "BadRequest"
       });
     });
 
@@ -55,7 +56,8 @@ describe("Client", () => {
 
       expect(res.status).toBe(400);
       expect(res.body).toEqual({
-        error: "Invalid client: Client email not valid email"
+        message: "Client email not valid email",
+        error: "BadRequest"
       });
     });
 
@@ -72,7 +74,8 @@ describe("Client", () => {
 
       expect(res.status).toBe(400);
       expect(res.body).toEqual({
-        error: "Invalid client: Client phone must be of type string"
+        message: "Client phone must be of type string",
+        error: "BadRequest"
       });
     });
   });

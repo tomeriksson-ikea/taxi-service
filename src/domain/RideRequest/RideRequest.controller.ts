@@ -9,6 +9,10 @@ export class RideRequestController {
     this.repository = repository;
   }
 
+  getRideRequest = async (id: string): Promise<RideRequest> => {
+    return this.repository.get(id);
+  };
+
   createRideRequest = async (reqBody: any): Promise<RideRequest> => {
     const rideRequest = RideRequest.create(reqBody);
     return this.repository.create(rideRequest);

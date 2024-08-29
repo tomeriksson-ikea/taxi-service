@@ -5,6 +5,7 @@ import {
 } from "../domain/RideRequest/RideRequest";
 import { RawEntity } from "../domain/Entity";
 import { Repository } from "./Repository";
+import { NotFoundError } from "../application/errors/Errors";
 
 export class RideRequestRepository implements Repository {
   private readonly client: MongoClient;
@@ -38,7 +39,7 @@ export class RideRequestRepository implements Repository {
   async get(id: string): Promise<RideRequest> {
     const rideRequest = await this.rideRequests.findOne({ id });
     if (!rideRequest) {
-      throw new Error("Ride request not found");
+      throw new NotFoundError("Ride request not found");
     }
     return RideRequest.createFromRaw(rideRequest);
   }

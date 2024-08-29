@@ -1,5 +1,6 @@
 import { Request, Router } from "express";
 import { RideRequestController } from "../../domain/RideRequest/RideRequest.controller";
+import { Responder } from "../utils/Responder";
 
 export const rideRequestHandlers = (
   controller: RideRequestController
@@ -8,20 +9,27 @@ export const rideRequestHandlers = (
 
   routes.post("/", async (req, res) => {
     const rideRequest = await controller.createRideRequest(req.body);
-    return res.status(201).send(rideRequest.toRaw());
+    return new Responder(res).created(rideRequest.toRaw());
   });
 
-  routes.post("/:id/bids", async (req, res) => {
+  routes.get("/:id", async (req, res, next) => {
+    try {
+      const rideRequest = await controller.getRideRequest(req.params.id);
+      return new Responder(res).created(rideRequest.toRaw());
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  routes.post("/:id/bids", async (req, res, next) => {
     try {
       const bid = await controller.placeBidOnRideRequest(
         req.params.id,
         req.body
       );
-      return res.status(201).send(bid.toRaw());
+      return new Responder(res).created(bid.toRaw());
     } catch (e) {
-      return res
-        .status(400)
-        .send({ id: req.params.id, error: (e as Error).message });
+      next(e);
     }
   });
 
@@ -32,7 +40,7 @@ export const rideRequestHandlers = (
         req.params.id,
         req.params.bidId
       );
-      return res.status(200).send(bid.toRaw());
+      return new Responder(res).ok(bid.toRaw());
     }
   );
 

@@ -8,14 +8,14 @@ export const clientHandlers = (
 ): Router => {
   const routes = Router();
 
-  routes.post("/", async (req, res) => {
+  routes.post("/", async (req, res, next) => {
     try {
       validator.validateOrThrow(req.body);
 
       const client = await controller.createClient(req.body);
       return res.status(201).send(client.toRaw());
     } catch (e) {
-      return res.status(400).send({ error: (e as Error).message });
+      next(e);
     }
   });
 

@@ -1,6 +1,7 @@
 import { Entity, RawEntity } from "../Entity";
 import { ClientProps } from "../Client/Client";
 import { Bid, BidData } from "../Bid/Bid";
+import { BadRequestError } from "../../application/errors/Errors";
 
 export type RideRequestProps = {
   client: ClientProps;
@@ -31,7 +32,9 @@ export class RideRequest extends Entity<RideRequestData> {
 
   addBid(bid: Bid) {
     if (this.hasAcceptedBid()) {
-      throw new Error("Cannot add bid to ride request with accepted bid");
+      throw new BadRequestError(
+        "Cannot add bid to ride request with accepted bid"
+      );
     }
     this.bids.push(bid);
   }
