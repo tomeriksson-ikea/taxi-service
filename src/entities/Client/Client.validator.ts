@@ -1,4 +1,4 @@
-import { ValidationError, Validator } from "./Validator";
+import { ValidationError, Validator } from "../common/validators/Validator";
 
 export class ClientValidator implements Validator {
   private readonly requiredFieldsValidator: Validator;

@@ -1,4 +1,4 @@
-import { RideRequestRepository } from "../../repositories/RideRequest.repository";
+import { RideRequestRepository } from "./RideRequest.repository";
 import { RideRequest } from "./RideRequest";
 import { Bid } from "../Bid/Bid";
 

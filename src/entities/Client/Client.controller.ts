@@ -1,5 +1,5 @@
 import { Client } from "./Client";
-import { ClientRepository } from "../../repositories/Client.repository";
+import { ClientRepository } from "./Client.repository";
 
 export class ClientController {
   private readonly repository: ClientRepository;

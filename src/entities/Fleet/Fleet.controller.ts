@@ -1,4 +1,4 @@
-import { FleetRepository } from "../../repositories/Fleet.repository";
+import { FleetRepository } from "./Fleet.repository";
 import { Fleet } from "./Fleet";
 
 export class FleetController {
