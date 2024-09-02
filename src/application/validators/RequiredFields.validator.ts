@@ -1,4 +1,4 @@
-import { RequiredFieldsValidationError } from "../errors/Errors";
+import { ValidationError } from "./Validator";
 
 export class RequiredFieldsValidator<T> {
   private readonly fields: Array<keyof T>;
@@ -17,5 +17,12 @@ export class RequiredFieldsValidator<T> {
         `Missing fields: ${missingFields.join(", ")}`
       );
     }
+  }
+}
+
+class RequiredFieldsValidationError extends ValidationError {
+  constructor(message: string) {
+    super(`Required fields validation failed; ${message}`);
+    this.name = "RequiredFieldsValidationError";
   }
 }

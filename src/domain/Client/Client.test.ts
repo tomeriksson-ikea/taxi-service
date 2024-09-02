@@ -78,7 +78,7 @@ describe("Client", () => {
       expect(res.body).toEqual({
         error: "ClientValidationError",
         message:
-          "Client validation failed; String validation failed; Value is not a string"
+          "Client validation failed; Phone validation failed; String validation failed; Value is not a string"
       });
     });
   });

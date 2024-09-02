@@ -1,5 +1,4 @@
-import { Validator } from "./Validator";
-import { ClientValidationError } from "../errors/Errors";
+import { ValidationError, Validator } from "./Validator";
 
 export class ClientValidator implements Validator {
   private readonly requiredFieldsValidator: Validator;
@@ -28,5 +27,12 @@ export class ClientValidator implements Validator {
     } catch (e) {
       throw new ClientValidationError((e as Error).message);
     }
+  }
+}
+
+class ClientValidationError extends ValidationError {
+  constructor(message: string) {
+    super(`Client validation failed; ${message}`);
+    this.name = "ClientValidationError";
   }
 }

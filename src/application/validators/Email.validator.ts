@@ -1,5 +1,4 @@
-import { Validator } from "./Validator";
-import { EmailValidationError } from "../errors/Errors";
+import { ValidationError, Validator } from "./Validator";
 import { StringValidator } from "./String.validator";
 
 export class EmailValidator implements Validator {
@@ -15,5 +14,12 @@ export class EmailValidator implements Validator {
     } catch (e) {
       throw new EmailValidationError((e as Error).message);
     }
+  }
+}
+
+class EmailValidationError extends ValidationError {
+  constructor(message: string) {
+    super(`Email validation failed; ${message}`);
+    this.name = "EmailValidationError";
   }
 }

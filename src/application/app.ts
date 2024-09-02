@@ -16,6 +16,8 @@ import { StringValidator } from "./validators/String.validator";
 import { EmailValidator } from "./validators/Email.validator";
 import { RequiredFieldsValidator } from "./validators/RequiredFields.validator";
 import { ClientProps } from "../domain/Client/Client";
+import { NameValidator } from "./validators/Name.validator";
+import { PhoneValidator } from "./validators/Phone.validator";
 
 export const setupApp = async (): Promise<Express> => {
   const config = new Config();
@@ -48,8 +50,8 @@ export const setupApp = async (): Promise<Express> => {
     "phone"
   ]);
   const emailValidator = new EmailValidator(new StringValidator());
-  const nameValidator = new StringValidator().isNotEmpty();
-  const phoneValidator = new StringValidator().isNotEmpty();
+  const nameValidator = new NameValidator(new StringValidator());
+  const phoneValidator = new PhoneValidator(new StringValidator());
 
   const clientValidator = new ClientValidator(
     requiredFieldsValidator,

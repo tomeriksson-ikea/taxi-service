@@ -1,5 +1,4 @@
-import { Validator } from "./Validator";
-import { StringValidationError } from "../errors/Errors";
+import { ValidationError, Validator } from "./Validator";
 
 type Condition<T> = (value: T) => string | undefined;
 
@@ -39,5 +38,12 @@ export class StringValidator implements Validator {
         throw new StringValidationError(errorMessage);
       }
     }
+  }
+}
+
+class StringValidationError extends ValidationError {
+  constructor(message: string) {
+    super(`String validation failed; ${message}`);
+    this.name = "StringValidationError";
   }
 }
