@@ -12,6 +12,10 @@ import { FleetRepository } from "../repositories/Fleet.repository";
 import { Repository } from "../repositories/Repository";
 import { ClientValidator } from "./validators/Client.validator";
 import { errorHandler } from "./handlers/Error.handler";
+import { StringValidator } from "./validators/String.validator";
+import { EmailValidator } from "./validators/Email.validator";
+import { RequiredFieldsValidator } from "./validators/RequiredFields.validator";
+import { ClientProps } from "../domain/Client/Client";
 
 export const setupApp = async (): Promise<Express> => {
   const config = new Config();
@@ -38,7 +42,21 @@ export const setupApp = async (): Promise<Express> => {
     rideRequestRepository
   );
 
-  const clientValidator = new ClientValidator();
+  const requiredFieldsValidator = new RequiredFieldsValidator<ClientProps>([
+    "name",
+    "email",
+    "phone"
+  ]);
+  const emailValidator = new EmailValidator(new StringValidator());
+  const nameValidator = new StringValidator().isNotEmpty();
+  const phoneValidator = new StringValidator().isNotEmpty();
+
+  const clientValidator = new ClientValidator(
+    requiredFieldsValidator,
+    emailValidator,
+    nameValidator,
+    phoneValidator
+  );
 
   const app = express();
   app.use(express.json());

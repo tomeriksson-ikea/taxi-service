@@ -25,7 +25,7 @@ describe("Client", () => {
   });
 
   describe("Client validation", () => {
-    it("should throw error if client name is not of type string", async () => {
+    it("should throw error if client name is missing", async () => {
       const client = {
         name: undefined,
         email: "john.doe@email.com",
@@ -38,8 +38,9 @@ describe("Client", () => {
 
       expect(res.status).toBe(400);
       expect(res.body).toEqual({
-        message: "Client name must be of type string",
-        error: "BadRequest"
+        error: "ClientValidationError",
+        message:
+          "Client validation failed; Required fields validation failed; Missing fields: name"
       });
     });
 
@@ -56,8 +57,9 @@ describe("Client", () => {
 
       expect(res.status).toBe(400);
       expect(res.body).toEqual({
-        message: "Client email not valid email",
-        error: "BadRequest"
+        error: "ClientValidationError",
+        message:
+          "Client validation failed; Email validation failed; String validation failed; String is not an email"
       });
     });
 
@@ -74,8 +76,9 @@ describe("Client", () => {
 
       expect(res.status).toBe(400);
       expect(res.body).toEqual({
-        message: "Client phone must be of type string",
-        error: "BadRequest"
+        error: "ClientValidationError",
+        message:
+          "Client validation failed; String validation failed; Value is not a string"
       });
     });
   });

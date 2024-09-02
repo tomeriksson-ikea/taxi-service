@@ -22,8 +22,9 @@ describe("Errors", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
-      message: "Client name must be of type string",
-      error: "BadRequest"
+      error: "ClientValidationError",
+      message:
+        "Client validation failed; Required fields validation failed; Missing fields: name"
     });
   });
 

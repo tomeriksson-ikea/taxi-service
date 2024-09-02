@@ -1,18 +1,32 @@
 import { Validator } from "./Validator";
-import { BadRequestError } from "../errors/Errors";
+import { ClientValidationError } from "../errors/Errors";
 
 export class ClientValidator implements Validator {
-  validateOrThrow(body: any): void {
-    if (typeof body.name !== "string") {
-      throw new BadRequestError("Client name must be of type string");
-    }
+  private readonly requiredFieldsValidator: Validator;
+  private readonly emailValidator: Validator;
+  private readonly nameValidator: Validator;
+  private readonly phoneValidator: Validator;
 
-    if (!body.email.match(/\S+@\S+\.\S+/)) {
-      throw new BadRequestError("Client email not valid email");
-    }
+  constructor(
+    requiredFieldsValidator: Validator,
+    emailValidator: Validator,
+    nameValidator: Validator,
+    phoneValidator: Validator
+  ) {
+    this.requiredFieldsValidator = requiredFieldsValidator;
+    this.emailValidator = emailValidator;
+    this.nameValidator = nameValidator;
+    this.phoneValidator = phoneValidator;
+  }
 
-    if (typeof body.phone !== "string") {
-      throw new BadRequestError("Client phone must be of type string");
+  validateOrThrow(client: any): void {
+    try {
+      this.requiredFieldsValidator.validateOrThrow(client);
+      this.emailValidator.validateOrThrow(client.email);
+      this.nameValidator.validateOrThrow(client.name);
+      this.phoneValidator.validateOrThrow(client.phone);
+    } catch (e) {
+      throw new ClientValidationError((e as Error).message);
     }
   }
 }

@@ -1,3 +1,3 @@
 export interface Validator {
-  validateOrThrow(body: any): void;
+  validateOrThrow(value: any): void;
 }
