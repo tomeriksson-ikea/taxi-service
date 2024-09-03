@@ -1,10 +1,10 @@
 import { Express } from "express";
-import { setupApp } from "../../application/app";
-import { purgeMongoDB } from "../../../test/MongoDB.setup";
 import { RideRequestProps } from "./RideRequest";
 import { agent } from "supertest";
 import { FleetProps } from "../Fleet/Fleet";
 import { BidProps } from "../Bid/Bid";
+import { setupApp } from "../../../application/app";
+import { purgeMongoDB } from "../../../../test/MongoDB.setup";
 
 describe("RideRequest", () => {
   let app: Express;

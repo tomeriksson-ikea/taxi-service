@@ -1,7 +1,7 @@
 import { Collection, MongoClient, ServerApiVersion } from "mongodb";
 import { Fleet, FleetProps } from "./Fleet";
-import { RawEntity } from "../common/Entity";
-import { Repository } from "../common/Repository";
+import { RawEntity } from "../Entity";
+import { Repository } from "../Repository";
 
 export class FleetRepository implements Repository {
   private readonly client: MongoClient;

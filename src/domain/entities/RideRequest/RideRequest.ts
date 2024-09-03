@@ -1,7 +1,7 @@
-import { Entity, RawEntity } from "../common/Entity";
+import { Entity, RawEntity } from "../Entity";
 import { ClientProps } from "../Client/Client";
 import { Bid, BidData } from "../Bid/Bid";
-import { BadRequestError } from "../../application/errors/Errors";
+import { BadRequestError } from "../../../application/errors/Errors";
 
 export type RideRequestProps = {
   client: ClientProps;

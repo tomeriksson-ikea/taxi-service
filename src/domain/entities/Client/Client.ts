@@ -1,4 +1,4 @@
-import { Entity, RawEntity } from "../common/Entity";
+import { Entity, RawEntity } from "../Entity";
 
 export interface ClientProps {
   name: string;

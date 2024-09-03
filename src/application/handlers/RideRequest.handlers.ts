@@ -1,5 +1,5 @@
 import { Request, Router } from "express";
-import { RideRequestController } from "../../entities/RideRequest/RideRequest.controller";
+import { RideRequestController } from "../../domain/entities/RideRequest/RideRequest.controller";
 import { Responder } from "../utils/Responder";
 
 export const rideRequestHandlers = (

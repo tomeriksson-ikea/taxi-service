@@ -1,8 +1,8 @@
 import { Collection, MongoClient, ServerApiVersion } from "mongodb";
 import { RideRequest, RideRequestData } from "./RideRequest";
-import { RawEntity } from "../common/Entity";
-import { Repository } from "../common/Repository";
-import { NotFoundError } from "../../application/errors/Errors";
+import { RawEntity } from "../Entity";
+import { Repository } from "../Repository";
+import { NotFoundError } from "../../../application/errors/Errors";
 
 export class RideRequestRepository implements Repository {
   private readonly client: MongoClient;

@@ -1,4 +1,4 @@
-import { BadRequestError } from "../../../application/errors/Errors";
+import { BadRequestError } from "../../application/errors/Errors";
 
 export interface Validator {
   validateOrThrow(value: any): void;

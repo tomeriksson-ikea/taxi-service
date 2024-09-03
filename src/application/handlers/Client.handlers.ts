@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { ClientController } from "../../entities/Client/Client.controller";
-import { Validator } from "../../entities/common/validators/Validator";
+import { ClientController } from "../../domain/entities/Client/Client.controller";
+import { Validator } from "../../domain/validators/Validator";
 
 export const clientHandlers = (
   controller: ClientController,
